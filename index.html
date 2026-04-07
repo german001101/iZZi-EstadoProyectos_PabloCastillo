@@ -3,230 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Symphonica Dashboard + PPT Export</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/gitbrent/PptxGenJS@3.12.0/dist/pptxgen.bundle.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .chart-container { position: relative; width: 100%; max-width: 500px; height: 320px; margin: auto; }
-        .status-dot { height: 10px; width: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
-        .completed { background-color: #10b981; }
-        .in-progress { background-color: #f59e0b; }
-        .not-started { background-color: #ef4444; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    </style>
-</head>
-<body class="bg-slate-50 text-slate-900 antialiased">
+    <title>Symphonica Dashboard</title>
 
-<div class="min-h-screen flex flex-col">
-    <header class="bg-white border-b border-slate-200 py-6 px-4 sm:px-6 lg:px-8 shadow-sm">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h1 class="text-2xl font-bold text-slate-800 tracking-tight text-center md:text-left">Symphonica Management</h1>
-                <p class="text-slate-500 text-sm">Dashboard de Ingeniería e Infraestructura - Listado Completo</p>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+
+    <!-- Librerías -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+</head>
+
+<body>
+
+<header>
+    <div class="header-inner">
+        <div class="brand-logo">
+            <div class="brand-icon">
+                <img src="icon/intraway.png" alt="Intraway">
             </div>
-            
-            <div class="flex items-center gap-4">
-                <button onclick="downloadPPT()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-md active:scale-95">
-                    <span>&#128196;</span> Descargar PPT Completo
-                </button>
+            <div>
+                <div class="brand-title">Symphonica Management</div>
+                <div class="brand-sub">Dashboard de Ingeniería e Infraestructura</div>
             </div>
         </div>
-    </header>
 
-    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Summary Stats & Chart -->
-            <div class="lg:col-span-1 space-y-6">
-                <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                    <h3 class="text-lg font-bold mb-4">Balance de Estatus</h3>
-                    <div class="chart-container">
-                        <canvas id="statusChart"></canvas>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-3 gap-2">
-                    <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-100 text-center">
-                        <span class="block text-xl font-bold text-emerald-700" id="stat-comp">0</span>
-                        <span class="text-[10px] uppercase font-bold text-emerald-600">Listo</span>
-                    </div>
-                    <div class="bg-amber-50 p-3 rounded-lg border border-amber-100 text-center">
-                        <span class="block text-xl font-bold text-amber-700" id="stat-prog">0</span>
-                        <span class="text-[10px] uppercase font-bold text-amber-600">Proceso</span>
-                    </div>
-                    <div class="bg-rose-50 p-3 rounded-lg border border-rose-100 text-center">
-                        <span class="block text-xl font-bold text-rose-700" id="stat-not">0</span>
-                        <span class="text-[10px] uppercase font-bold text-rose-600">Pendiente</span>
-                    </div>
-                </div>
+        <div class="header-actions">
+            <span class="badge-date" id="currentDate">—</span>
+            <button class="btn-primary" onclick="downloadPPT()">
+                📊 Descargar PPT Completo
+            </button>
+        </div>
+    </div>
+</header>
+
+<main>
+    <!-- KPI GRID -->
+    <p class="section-title">Resumen General</p>
+    <div class="kpi-grid">
+        <div class="kpi-card green">
+            <div class="kpi-icon">✅</div>
+            <div class="kpi-value" id="kpi-comp">0</div>
+            <div class="kpi-label">Completados</div>
+            <span class="kpi-pct" id="kpi-comp-pct">0%</span>
+        </div>
+        <div class="kpi-card amber">
+            <div class="kpi-icon">🔄</div>
+            <div class="kpi-value" id="kpi-prog">0</div>
+            <div class="kpi-label">En Progreso</div>
+            <span class="kpi-pct" id="kpi-prog-pct">0%</span>
+        </div>
+        <div class="kpi-card red">
+            <div class="kpi-icon">⏳</div>
+            <div class="kpi-value" id="kpi-not">0</div>
+            <div class="kpi-label">Pendientes</div>
+            <span class="kpi-pct" id="kpi-not-pct">0%</span>
+        </div>
+        <div class="kpi-card blue">
+            <div class="kpi-icon">📋</div>
+            <div class="kpi-value" id="kpi-total">0</div>
+            <div class="kpi-label">Total Iniciativas</div>
+            <span class="kpi-pct">100%</span>
+        </div>
+        <div class="kpi-card red">
+            <div class="kpi-icon">🔴</div>
+            <div class="kpi-value" id="kpi-alta">0</div>
+            <div class="kpi-label">Prioridad Alta</div>
+            <span class="kpi-pct" id="kpi-alta-pct">0%</span>
+        </div>
+        <div class="kpi-card cyan">
+            <div class="kpi-icon">👥</div>
+            <div class="kpi-value" id="kpi-resp">0</div>
+            <div class="kpi-label">Responsables</div>
+            <span class="kpi-pct">Activos</span>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <p class="section-title">Análisis Visual</p>
+    <div class="charts-grid">
+        <!-- Donut Status -->
+        <div class="chart-card">
+            <div class="chart-card-title">Estado de Iniciativas</div>
+            <div class="chart-wrapper">
+                <canvas id="chartStatus"></canvas>
             </div>
+        </div>
 
-            <!-- Task List -->
-            <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-                    <h3 class="text-lg font-bold">Iniciativas Actuallizadas</h3>
-                    <div class="flex gap-2 w-full sm:w-auto">
-                        <input type="text" id="searchInput" placeholder="Buscar..." class="text-xs border rounded-md px-3 py-2 w-full sm:w-48 outline-none focus:ring-2 focus:ring-indigo-500">
-                        <select id="filterStatus" class="text-xs border rounded-md px-2 py-2 outline-none">
-                            <option value="All">Estatus: Todos</option>
-                            <option value="Completed">Completed</option>
-                            <option value="In progress">In progress</option>
-                            <option value="Not started">Not started</option>
-                        </select>
-                    </div>
-                </div>
-                <div id="taskGrid" class="space-y-3 overflow-y-auto pr-2 text-sm flex-grow" style="max-height: 500px;">
-                    <!-- Se llena con JS -->
-                </div>
+        <!-- Bar Criticidad -->
+        <div class="chart-card">
+            <div class="chart-card-title">Distribución por Prioridad</div>
+            <div class="chart-wrapper">
+                <canvas id="chartCrit"></canvas>
             </div>
-        </section>
-    </main>
-</div>
+        </div>
 
-<script>
-    const rawData = [
-        { title: "Operación PyME sobre rOLTs.", status: "Completed", sol: "P.Castillo", crit: "Alta", resp: "Germán Burgos Burgoa", type: "PM-7438 [FTTH Nacional CR1]", notes: "Se inciarán pruebas UAT mañana 17-marzo con Harmonic y Technetix." },
-        { title: "Correo: Intraway | Cotización Servicios QA & DEV", status: "In progress", sol: "A.Gonzalez", crit: "Alta", resp: "Laura Alonso", type: "Email", notes: "Revisar con Ariel si quiere que veamos la cotización en una llamada" },
-        { title: "Dashboad de ONT Status en Sentinel", status: "Not started", sol: "A.Gonzalez", crit: "Alta", resp: "Laura Alonso", type: "Sentinel", notes: "Comentarle a Ariel que podemos hacerlo con el ME pero se le descuentan los días" },
-        { title: "Pasar NE a Operativo y No Op - Traspaso", status: "Not started", sol: "A.Gonzalez", crit: "Alta", resp: "Laura Alonso", type: "KT", notes: "Revisar cómo podríamos hacer el traspaso de conocimiento a Operaciones/Ingenieria" },
-        { title: "Pruebas de aprovisionamiento en Symphonica", status: "Not started", sol: "A.Gonzalez", crit: "Alta", resp: "Laura Alonso", type: "KT", notes: "Revisar con Ger si ya se inició con este traspaso de conocimiento" },
-        { title: "Carga de OLTs/rOLTs en Sym", status: "Not started", sol: "A.Gonzalez", crit: "Media", resp: "Laura Alonso", type: "Provisioning", notes: "Revisar internamente requisitos y alinear próx pasos con Ariel" },
-        { title: "Correo: Recorrido Symphonica", status: "Not started", sol: "A.Gonzalez", crit: "Media", resp: "Walter Strauss", type: "Training", notes: "Revisar correo de Ariel que solicitó algunos items para próxima reunión/sesión" },
-        { title: "CR 4 intraway. Robustecimiento cOS Harmonic.", status: "In progress", sol: "P.Castillo", crit: "Alta", resp: "P.Castillo", type: "PM-7438", notes: "Organizar reunión conjunta con Ariel y Blandon de Harmonic" },
-        { title: "Predescubrimiento sobre rOLTs.", status: "In progress", sol: "P.Castillo", crit: "Alta", resp: "Laura Alonso", type: "REQUERIMIENTO", notes: "Reconfirmar protocolos con proveedores Pablo y Fran" },
-        { title: "IMS ZTE", status: "In progress", sol: "P.Castillo", crit: "Alta", resp: "Laura Alonso", type: "PM-7557 [B2C]", notes: "Revisar la definición de migración de servicios" },
-        { title: "SUP-25601 - Symphonica Izzimxhfc", status: "Not started", sol: "C. Picaso", crit: "Media", resp: "Laura Alonso", type: "Jira", notes: "Reunión conjunta con Picaso, Ariel y Pablo para modificar alta de CM y MTA" },
-        { title: "Nuevos modelos de ONT", status: "Completed", sol: "P.Castillo", crit: "Alta", resp: "P.Castillo", type: "PM-7564", notes: "Se realizó VM el día 6 de Marzo para residencial." },
-        { title: "Mover instancias no-productivas AWS.", status: "In progress", sol: "P.Castillo", crit: "Alta", resp: "AWS Team", type: "COMPRAS", notes: "iZZi : Proceso Comercial" },
-        { title: "Automatización telefonía pyme.", status: "In progress", sol: "P.Castillo", crit: "Alta", resp: "Laura Alonso", type: "SOW", notes: "Revisión conjunta para revalidar las cotizaciones" },
-        { title: "Licenciamiento.", status: "In progress", sol: "P.Castillo", crit: "Alta", resp: "P.Castillo", type: "REQUERIMIENTO", notes: "Documento inicial Feb/2026. Update consumo 25/Marzo" },
-        { title: "Migración de OLTs a un BNG local (AFTR)", status: "In progress", sol: "P.Castillo", crit: "Baja", resp: "Laura Alonso", type: "PM-7564", notes: "Coordinación con Ariel para recurso en caso de VM" },
-        { title: "Nuevo perfil para community Wi-Fi.", status: "Not started", sol: "P.Castillo", crit: "Baja", resp: "pcastillob@izzi.mx", type: "Technical", notes: "Identificar quién lo lleva para entender requerimiento" },
-        { title: "PyMEs en tenant IZZIMX.", status: "Not started", sol: "P.Castillo", crit: "Baja", resp: "P.Castillo", type: "IW", notes: "¿Qué se necesita de IW? Luego del pedido, priorización" },
-        { title: "VLAN para STBs izzi.", status: "Not started", sol: "P.Castillo", crit: "Baja", resp: "P.Castillo", type: "Backlog", notes: "¿Proyecto o pedido para el backlog del ME?" },
-        { title: "Retirar enmascaramiento Symphonica.", status: "Not started", sol: "P.Castillo", crit: "Baja", resp: "Security", type: "Mantenimiento", notes: "A la espera de novedades una vez avance iZZi" },
-        { title: "Caso AWS: Flapeo rutas BGP", status: "Not started", sol: "P.Castillo", crit: "Media", resp: "Network", type: "Case 177258093600099", notes: "Revisar con Pablo si se sigue presentando y por qué sigue llegando correo" },
-        { title: "Evolución GPON MTY.", status: "In progress", sol: "P.Castillo", crit: "Media", resp: "P.Castillo", type: "PROPOSAL", notes: "Reclamar feedback a Pablo" },
-        { title: "Revisión datos para soporte.", status: "Completed", sol: "P.Castillo", crit: "Media", resp: "Support", type: "PM-7564", notes: "Cerrado, se realizó VM el jueves pasado. Sin pendientes en Sym" },
-        { title: "Automatización IPv4 fija para pyme", status: "Not started", sol: "P.Castillo", crit: "Media", resp: "Laura Alonso", type: "PROPOSAL", notes: "Propuesta enviada, esperar feedback" },
-        { title: "PM-7464. Homologación AAA Zequenze.", status: "In progress", sol: "P.Castillo", crit: "Media", resp: "Laura Alonso", type: "AAA", notes: "Acordar fecha de pruebas priorizando con otros proyectos" }
-    ];
+        <!-- Horizontal: Avance por Tipo -->
+        <div class="chart-card">
+            <div class="chart-card-title">Progreso General (%)</div>
+            <div class="progress-list" id="progressList" style="margin-top: 8px;"></div>
+        </div>
+    </div>
 
-    let chartInstance;
+    <!-- SECOND CHARTS ROW -->
+    <div class="charts-grid" style="margin-bottom: 28px;">
+        <!-- Responsables -->
+        <div class="chart-card">
+            <div class="chart-card-title">Iniciativas por Responsable</div>
+            <div class="resp-list" id="respList"></div>
+        </div>
 
-    function renderTasks() {
-        const grid = document.getElementById('taskGrid');
-        const search = document.getElementById('searchInput').value.toLowerCase();
-        const statusF = document.getElementById('filterStatus').value;
-
-        const filtered = rawData.filter(item => {
-            const matchesSearch = item.title.toLowerCase().includes(search) || item.resp.toLowerCase().includes(search);
-            const matchesStatus = statusF === 'All' || item.status === statusF;
-            return matchesSearch && matchesStatus;
-        });
-
-        grid.innerHTML = filtered.map(item => `
-            <div class="p-4 border rounded-lg hover:border-indigo-300 hover:bg-indigo-50/30 transition-all group">
-                <div class="flex justify-between items-start mb-1">
-                    <span class="font-bold text-slate-800 group-hover:text-indigo-700">${item.title}</span>
-                    <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded shadow-sm ${item.crit === 'Alta' ? 'bg-rose-100 text-rose-600' : (item.crit === 'Media' ? 'bg-blue-100 text-blue-600' : 'bg-slate-100 text-slate-600')}">${item.crit}</span>
-                </div>
-                <div class="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-500 mb-2">
-                    <span class="flex items-center"><span class="status-dot ${item.status === 'Completed' ? 'completed' : (item.status === 'In progress' ? 'in-progress' : 'not-started')}"></span>${item.status}</span>
-                    <span><strong>Resp:</strong> ${item.resp}</span>
-                    <span class="italic">${item.type}</span>
-                </div>
-                <p class="text-xs text-slate-600 bg-white/50 p-2 rounded border border-slate-100">${item.notes}</p>
+        <!-- Stacked bar: status por prioridad -->
+        <div class="chart-card">
+            <div class="chart-card-title">Estado vs Prioridad</div>
+            <div class="chart-wrapper">
+                <canvas id="chartStackedBar"></canvas>
             </div>
-        `).join('');
-    }
+        </div>
 
-    function updateDashboard() {
-        const comp = rawData.filter(d => d.status === 'Completed').length;
-        const prog = rawData.filter(d => d.status === 'In progress').length;
-        const not = rawData.filter(d => d.status === 'Not started').length;
+        <!-- Completado alta vs baja -->
+        <div class="chart-card">
+            <div class="chart-card-title">Alta Prioridad — Detalle</div>
+            <div class="chart-wrapper">
+                <canvas id="chartAltaPie"></canvas>
+            </div>
+        </div>
+    </div>
 
-        document.getElementById('stat-comp').innerText = comp;
-        document.getElementById('stat-prog').innerText = prog;
-        document.getElementById('stat-not').innerText = not;
+    <!-- TASK TABLE -->
+    <p class="section-title">Detalle de Iniciativas</p>
+    <div class="table-section">
+        <div class="table-header">
+            <div class="table-header-title">Listado Completo</div>
+            <div class="table-controls">
+                <input type="text" class="search-input" id="searchInput" placeholder="🔍  Buscar iniciativa...">
+                <select class="select-input" id="filterStatus">
+                    <option value="All">Todos los estados</option>
+                    <option value="Completed">Completado</option>
+                    <option value="In progress">En Progreso</option>
+                    <option value="Not started">Pendiente</option>
+                </select>
+                <select class="select-input" id="filterCrit">
+                    <option value="All">Toda prioridad</option>
+                    <option value="Alta">Alta</option>
+                    <option value="Media">Media</option>
+                    <option value="Baja">Baja</option>
+                </select>
+            </div>
+        </div>
+        <div class="task-list" id="taskList"></div>
+    </div>
+</main>
 
-        if (chartInstance) chartInstance.destroy();
-        const ctx = document.getElementById('statusChart').getContext('2d');
-        chartInstance = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Completado', 'En Progreso', 'Pendiente'],
-                datasets: [{
-                    data: [comp, prog, not],
-                    backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
-                    hoverOffset: 15,
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10, weight: 'bold' } } }
-                },
-                cutout: '75%'
-            }
-        });
-    }
+<footer>
+    Symphonica Management Dashboard — Ingeniería e Infraestructura — <span id="footerYear"></span>
+</footer>
 
-    function downloadPPT() {
-        let pptx = new PptxGenJS();
-        pptx.layout = 'LAYOUT_WIDE';
+<!-- JS -->
+<script src="js/app.js"></script>
 
-        // Slide 1: Portada
-        let slide1 = pptx.addSlide();
-        slide1.background = { color: "0f172a" };
-        slide1.addText("REPORTE DE ESTATUS\nPROYECTOS SYMPHONICA", {
-            x: 0.5, y: 2.0, w: 12, fontSize: 48, color: "00D285", bold: true
-        });
-        slide1.addText("Resumen Ejecutivo de Ingeniería e Infraestructura", {
-            x: 0.5, y: 3.5, w: 12, fontSize: 20, color: "cbd5e1"
-        });
-
-        // Slides de Tablas (Dividimos para que no se desborde)
-        const itemsPerSlide = 8;
-        for (let i = 0; i < rawData.length; i += itemsPerSlide) {
-            let slide = pptx.addSlide();
-            slide.addText(`DETALLE DE INICIATIVAS (${Math.floor(i/itemsPerSlide)+1})`, { x: 0.5, y: 0.3, fontSize: 24, bold: true, color: "1e293b" });
-            
-            let tableData = [
-                [{ text: "Iniciativa", options: { fill: "1e293b", color: "ffffff", bold: true } },
-                 { text: "Estatus", options: { fill: "1e293b", color: "ffffff", bold: true } },
-                 { text: "Prioridad", options: { fill: "1e293b", color: "ffffff", bold: true } },
-                 { text: "Responsable", options: { fill: "1e293b", color: "ffffff", bold: true } },
-                 { text: "Notas", options: { fill: "1e293b", color: "ffffff", bold: true } }]
-            ];
-
-            rawData.slice(i, i + itemsPerSlide).forEach(item => {
-                tableData.push([
-                    { text: item.title, options: { fontSize: 9 } },
-                    { text: item.status, options: { fontSize: 9, color: item.status === 'Completed' ? '10b981' : (item.status === 'In progress' ? 'f59e0b' : 'ef4444') } },
-                    { text: item.crit, options: { fontSize: 9, bold: true } },
-                    { text: item.resp, options: { fontSize: 9 } },
-                    { text: item.notes, options: { fontSize: 8 } }
-                ]);
-            });
-
-            slide.addTable(tableData, { x: 0.5, y: 0.8, w: 12.3, border: { type: 'solid', color: 'E2E8F0', pt: 0.5 } });
-        }
-
-        pptx.writeFile({ fileName: "Symphonica_Estatus_Completo.pptx" });
-    }
-
-    document.getElementById('searchInput').addEventListener('input', renderTasks);
-    document.getElementById('filterStatus').addEventListener('change', renderTasks);
-
-    window.onload = () => {
-        updateDashboard();
-        renderTasks();
-    };
-</script>
 </body>
 </html>
